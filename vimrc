@@ -1,29 +1,65 @@
-"""""""""""""" vundle 
-set nocompatible
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
-Plugin 'scrooloose/syntastic'
-Plugin 'scrooloose/nerdtree'
-Plugin 'majutsushi/tagbar'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'tpope/vim-fugitive'
-Plugin 'tpope/vim-sensible'
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-Plugin 'tpope/vim-surround'
-Plugin 'pangloss/vim-javascript'
-Plugin 'kien/ctrlp.vim'
-Plugin 'leafgarland/typescript-vim'
-Plugin 'clausreinke/typescript-tools.vim'
-Plugin 'bling/vim-airline'
-Plugin 'lukaszkorecki/CoffeeTags'
-Plugin 'ervandew/supertab'
-Plugin 'moll/vim-node'
-Plugin 'jason0x43/vim-js-indent'
-Plugin 'mustache/vim-mustache-handlebars'
-call vundle#end()            " required
+"NeoBundle Scripts-----------------------------
+if has('vim_starting')
+  if &compatible
+    set nocompatible               " Be iMproved
+  endif
 
+  " Required:
+  set runtimepath+=/Users/byh/.vim/bundle/neobundle.vim/
+endif
+
+" Required:
+call neobundle#begin(expand('/Users/byh/.vim/bundle'))
+
+" Let NeoBundle manage NeoBundle
+" Required:
+NeoBundleFetch 'Shougo/neobundle.vim'
+
+" Add or remove your Bundles here:
+NeoBundle 'Shougo/neocomplete'
+NeoBundle 'scrooloose/syntastic'
+NeoBundle 'scrooloose/nerdtree'
+NeoBundle 'majutsushi/tagbar'
+NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'tpope/vim-fugitive'
+NeoBundle 'tpope/vim-sensible'
+NeoBundle 'Xuyuanp/nerdtree-git-plugin'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'pangloss/vim-javascript'
+NeoBundle 'kien/ctrlp.vim'
+NeoBundle 'leafgarland/typescript-vim'
+NeoBundle 'clausreinke/typescript-tools.vim'
+NeoBundle 'bling/vim-airline'
+NeoBundle 'lukaszkorecki/CoffeeTags'
+NeoBundle 'moll/vim-node'
+NeoBundle 'jason0x43/vim-js-indent'
+NeoBundle 'Shougo/vimproc.vim', {
+\ 'build' : {
+\     'windows' : 'tools\\update-dll-mingw',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make -f make_mac.mak',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
+\    },
+\ }
+NeoBundle 'Shougo/vimshell.vim'
+NeoBundle 'mustache/vim-mustache-handlebars'
+
+" You can specify revision/branch/tag.
+NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+
+" Required:
+call neobundle#end()
+
+" Required:
+filetype plugin indent on
+
+" If there are uninstalled bundles found on startup,
+" this will conveniently prompt you to install them.
+NeoBundleCheck
+"End NeoBundle Scripts-------------------------
+
+"""""""""""""" vundle 
 filetype plugin indent on    " required
 syntax on
 filetype plugin on
