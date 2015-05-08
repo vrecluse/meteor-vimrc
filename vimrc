@@ -97,7 +97,7 @@ map <C-n> :NERDTreeToggle<CR>
 noremap <silent> ,f :NERDTreeFind<CR>
 
 """""""""""""" Shell
-map ,s :sp<CR>:resize 10<CR>:ConqueTerm bash<CR>
+map ,s :sp<CR>:resize 10<CR>:VimShell<CR>
 
 """""""""""""" CoffeeTags
 autocmd BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
