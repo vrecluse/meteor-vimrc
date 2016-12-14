@@ -20,19 +20,20 @@ NeoBundle 'Shougo/neocomplete'
 NeoBundle 'scrooloose/syntastic'
 NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'majutsushi/tagbar'
-NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'tpope/vim-fugitive'
 NeoBundle 'tpope/vim-sensible'
 NeoBundle 'Xuyuanp/nerdtree-git-plugin'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'pangloss/vim-javascript'
 NeoBundle 'kien/ctrlp.vim'
-NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'clausreinke/typescript-tools.vim'
+NeoBundle 'Quramy/tsuquyomi'
 NeoBundle 'bling/vim-airline'
-NeoBundle 'lukaszkorecki/CoffeeTags'
 NeoBundle 'moll/vim-node'
 NeoBundle 'jason0x43/vim-js-indent'
+NeoBundle 'leafgarland/typescript-vim'
+NeoBundle 'suan/vim-instant-markdown'
+NeoBundle 'fatih/vim-go'
+" NeoBundle 'ervandew/supertab'
 NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
 \     'windows' : 'tools\\update-dll-mingw',
@@ -46,7 +47,7 @@ NeoBundle 'Shougo/vimshell.vim'
 NeoBundle 'mustache/vim-mustache-handlebars'
 
 " You can specify revision/branch/tag.
-NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
+" NeoBundle 'Shougo/vimshell', { 'rev' : '3787e5' }
 
 " Required:
 call neobundle#end()
@@ -80,6 +81,7 @@ let g:syntastic_html_tidy_ignore_errors = [
     \  'discarding unexpected <body>',
     \  '<script> escaping malformed URI reference',
     \  '<template> is not recognized!',
+    \  '<doctype> is not recognized!',
     \  '</head> isn''t allowed in <body> elements'
     \ ]
 
@@ -98,6 +100,7 @@ noremap <silent> ,f :NERDTreeFind<CR>
 
 """""""""""""" Shell
 map ,s :sp<CR>:resize 10<CR>:VimShell<CR>
+let g:vimshell_editor_command = "/usr/local/bin/mvim -v"
 
 """""""""""""" CoffeeTags
 autocmd BufNewFile,BufReadPost *.coffee setl foldmethod=indent nofoldenable
@@ -113,11 +116,9 @@ function! StartTSS()
   endif
 endfunction
 
-autocmd BufNewFile,BufRead *.ts call StartTSS()
-map ,t :TSSstarthere<CR>
-
-"""""""""""""" SuperTab
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+"autocmd BufNewFile,BufRead *.ts call StartTSS()
+"map ,t :TSSstarthere<CR>
+autocmd FileType typescript nmap <buffer> ,r <Plug>(TsuquyomiRenameSymbol)
 
 """""""""""""" NeoComplete
 " Use neocomplete.
@@ -126,8 +127,10 @@ let g:neocomplete#enable_camel_case_completion = 1
 let g:neocomplete#enable_underbar_completion = 1
 let g:neocomplete#enable_smart_case = 1
 " Set minimum syntax keyword length.
-" let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#sources#syntax#min_keyword_length = 3
 let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+let g:neocomplete#use_vimproc = 1
+"let g:neocomplete#disable_auto_complete = 1
 
 " Define dictionary.
 let g:neocomplete#sources#dictionary#dictionaries = {
@@ -160,7 +163,7 @@ inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
   return neocomplete#smart_close_popup() . "\<CR>"
   " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+  " return pumvisible() ? neocomplete#close_popup() : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -183,7 +186,10 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
 autocmd FileType cpp set omnifunc=cppcomplete#Complete
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType typescript setlocal omnifunc=TSScompleteFunc
+"autocmd FileType typescript setlocal omnifunc=TSScompleteFunc
+autocmd FileType typescript setlocal completeopt+=menu,preview
+autocmd FileType typescript NeoCompleteLock
+autocmd FileType typescript inoremap <expr><Tab>  pumvisible() ? "\<C-n>" : neocomplete#start_manual_complete()
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
@@ -199,7 +205,7 @@ let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.cs = '.*'
-let g:neocomplete#sources#omni#input_patterns.typescript = '.*'
+let g:neocomplete#sources#omni#input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
@@ -214,13 +220,42 @@ let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*
 let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
 let g:neocomplete#force_omni_input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
 let g:neocomplete#force_omni_input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-let g:neocomplete#force_omni_input_patterns.typescript = '.*'
+let g:neocomplete#force_omni_input_patterns.typescript = '[^. *\t]\.\w*\|\h\w*::'
 let g:clang_complete_auto = 0
 let g:clang_auto_select = 0
+
 """""""""""""" handlebars
 let g:mustache_abbreviations = 1
 autocmd BufNewFile,BufRead *.html set syntax=mustache
 au  BufNewFile,BufRead *.html set filetype=html.handlebars syntax=mustache | runtime! ftplugin/mustache.vim ftplugin/mustache*.vim ftplugin/mustache/*.vim
+
+"""""""""""""" go
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_types = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_fmt_command = "goimports"
+
+au FileType go nmap <leader>r <Plug>(go-run)
+au FileType go nmap <leader>b <Plug>(go-build)
+au FileType go nmap <leader>t <Plug>(go-test)
+au FileType go nmap <leader>c <Plug>(go-coverage)
+
+au FileType go nmap <Leader>i <Plug>(go-implements)
+au FileType go nmap <Leader>e <Plug>(go-rename)
+au FileType go nmap <Leader>n <Plug>(go-info)
+
+au FileType go nmap <Leader>gd <Plug>(go-doc-browser)
+
+
+let g:go_list_type = "quickfix"
+
+let g:syntastic_aggregate_errors = 1
+
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck', 'go']
+"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 
 """""""""""""" custom
 
@@ -231,3 +266,5 @@ set shiftwidth=4
 "set expandtab
 set splitbelow
 
+map te :tabedit<CR>
+let mapleader = ','
